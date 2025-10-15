@@ -3,27 +3,16 @@ import Button from '@/components/_atoms/Button/Button';
 import React from 'react';
 
 export interface PaginationButtonsProps {
-  /** Text for the previous button (default: "Prev") */
   prevLabel?: string;
-  /** Text for the next button (default: "Next") */
   nextLabel?: string;
-  /** Current page (1-based) */
   page: number;
-  /** Total number of pages */
   totalPages: number;
-  /** Whether there is a previous page */
   hasPrev: boolean;
-  /** Whether there is a next page */
   hasNext: boolean;
-  /** Handler for clicking previous */
   goPrev: () => void;
-  /** Handler for clicking next */
   goNext: () => void;
-  /** Optional: disable interactions while loading */
   loading?: boolean;
-  /** Optional className passthrough */
   className?: string;
-  /** Optional style passthrough */
   style?: React.CSSProperties;
 }
 

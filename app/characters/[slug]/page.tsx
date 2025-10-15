@@ -15,6 +15,7 @@ import { slugify, deslugify } from '@/utils/slugify';
 import Image from 'next/image';
 import styled from 'styled-components';
 import Link from 'next/link';
+import Spinner from '@/components/_atoms/Spinner/Spinner';
 
 const Container = styled.article`
   display: flex;
@@ -35,6 +36,7 @@ const ImageWrapper = styled.div`
   flex-shrink: 0;
   width: 300px;
   height: 300px;
+
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -97,7 +99,12 @@ export default function CharacterPage() {
     }
   }, [dispatch, slug, character]);
 
-  if (isLoading && !character) return <p>Loading…</p>;
+  if (isLoading && !character)
+    return (
+      <p>
+        <Spinner />
+      </p>
+    );
   if (error && !character) return <p role='alert'>{error}</p>;
   if (!isLoading && !character) return <p>Not found.</p>;
 

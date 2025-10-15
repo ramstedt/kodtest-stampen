@@ -11,6 +11,11 @@ import {
 import { slugify, deslugify } from '@/utils/slugify';
 import Image from 'next/image';
 import styled from 'styled-components';
+import {
+  fetchCharactersByUrls,
+  selectVisitedCharacters,
+} from '@/store/charactersSlice';
+import Spinner from '@/components/_atoms/Spinner/Spinner';
 
 const Container = styled.article`
   display: flex;
@@ -75,11 +80,21 @@ export default function FilmPage() {
 
   const films = useSelector(selectFilms);
   const { isLoading, error } = useSelector(selectFilmsListStatus);
+  const visitedCharacters = useSelector(selectVisitedCharacters);
 
+  const visitedByUrl = useMemo(() => {
+    const map = new Map<string, { name: string; url: string }>();
+    for (const c of visitedCharacters) map.set(c.url, c);
+    return map;
+  }, [visitedCharacters]);
   const film = useMemo(
     () => films.find((f) => slugify(f.title) === slug),
     [films, slug]
   );
+  const allCharNamesLoaded = useMemo(() => {
+    if (!film?.characters) return true;
+    return film.characters.every((u) => visitedByUrl.has(u));
+  }, [film?.characters, visitedByUrl]);
 
   useEffect(() => {
     if (!film && slug) {
@@ -88,7 +103,18 @@ export default function FilmPage() {
     }
   }, [dispatch, slug, film]);
 
-  if (isLoading && !film) return <p>Loading…</p>;
+  useEffect(() => {
+    if (film?.characters?.length) {
+      dispatch(fetchCharactersByUrls(film.characters));
+    }
+  }, [dispatch, film?.characters]);
+
+  if (isLoading && !film)
+    return (
+      <p>
+        <Spinner />
+      </p>
+    );
   if (error && !film) return <p role='alert'>{error}</p>;
   if (!film) return <p>Not found.</p>;
 
@@ -127,8 +153,20 @@ export default function FilmPage() {
 
           {film.characters && film.characters.length > 0 && (
             <DetailRow>
-              <span>Characters:</span> {/* TODO: links to names */}
-              {film.characters.join(', ')}
+              <span>Characters:</span>{' '}
+              {!allCharNamesLoaded ? (
+                <Spinner />
+              ) : (
+                film.characters.map((url, idx) => {
+                  const name = visitedByUrl.get(url)?.name as string;
+                  return (
+                    <span key={url}>
+                      <a href={`/characters/${slugify(name)}`}>{name}</a>
+                      {idx < film.characters.length - 1 && ', '}
+                    </span>
+                  );
+                })
+              )}
             </DetailRow>
           )}
         </FilmDetails>

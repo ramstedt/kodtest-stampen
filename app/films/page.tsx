@@ -11,6 +11,7 @@ import {
 import { slugify } from '@/utils/slugify';
 import Link from 'next/link';
 import SearchResultList from '@/components/SearchResultList/SearchResultList';
+import Spinner from '@/components/_atoms/Spinner/Spinner';
 
 export default function FilmsPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,16 +19,16 @@ export default function FilmsPage() {
   const { isLoading, error } = useSelector(selectFilmsListStatus);
 
   useEffect(() => {
-    if (films.length === 0) {
-      dispatch(fetchFilms(undefined));
-    }
-  }, [dispatch, films.length]);
+    dispatch(fetchFilms(undefined));
+  }, [dispatch]);
 
   if (isLoading) {
     return (
       <section>
         <h1>Star Wars Films</h1>
-        <p>Loading films…</p>
+        <p>
+          <Spinner />
+        </p>
       </section>
     );
   }
@@ -45,7 +46,9 @@ export default function FilmsPage() {
     <section>
       <h1>Star Wars Films</h1>
       {!films.length ? (
-        <p>Loading films…</p>
+        <p>
+          <Spinner />
+        </p>
       ) : (
         <SearchResultList>
           <ul>
