@@ -14,16 +14,36 @@ import {
 } from '@/store/charactersSlice';
 import { AppDispatch } from '@/store';
 import { useState } from 'react';
+import styled from 'styled-components';
+import Button from '../_atoms/Button/Button';
 
 interface SearchCardProps {
   loadingMsg: string;
   inputPlaceholder: string;
+  buttonLabel: string;
   noResultsMsg: string;
 }
+
+const Wrapper = styled.section`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 0;
+
+  input {
+    padding-left: 0.5rem;
+    border: 2px solid black;
+    height: 2rem;
+    width: 15rem;
+  }
+`;
 
 export default function SearchCard({
   loadingMsg,
   inputPlaceholder,
+  buttonLabel,
   noResultsMsg,
 }: SearchCardProps) {
   const dispatch = useDispatch<AppDispatch>();
@@ -36,7 +56,6 @@ export default function SearchCard({
     selectCharactersListStatus
   );
 
-  // Combine possible errors from films and characters into one string
   const errorMsg =
     [filmsError, charactersError].filter(Boolean).join(' • ') || null;
 
@@ -53,8 +72,9 @@ export default function SearchCard({
   };
 
   return (
-    <section>
+    <Wrapper>
       <input
+        name='search'
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={(e) => {
@@ -62,7 +82,7 @@ export default function SearchCard({
         }}
         placeholder={inputPlaceholder}
       />
-      <button onClick={handleSearch}>{inputPlaceholder}</button>
+      <Button label={buttonLabel} onClick={handleSearch} />
 
       {(loadingFilms || loadingCharacters) && <p>{loadingMsg}</p>}
       {errorMsg && <p role='alert'>{errorMsg}</p>}
@@ -82,6 +102,6 @@ export default function SearchCard({
           ))}
         </ul>
       )}
-    </section>
+    </Wrapper>
   );
 }
