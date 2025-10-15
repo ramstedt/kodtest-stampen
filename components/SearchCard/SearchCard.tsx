@@ -16,6 +16,8 @@ import { AppDispatch } from '@/store';
 import { useState } from 'react';
 import styled from 'styled-components';
 import Button from '../_atoms/Button/Button';
+import Link from 'next/link';
+import { slugify } from '@/utils/slugify';
 
 interface SearchCardProps {
   loadingMsg: string;
@@ -94,11 +96,15 @@ export default function SearchCard({
         characters.length === 0 && <p>{noResultsMsg}</p>}
       {(films.length > 0 || characters.length > 0) && (
         <ul>
-          {films.map((film: Film) => (
-            <li key={`film-${film.episode_id}`}>{film.title}</li>
+          {films.map((f: Film) => (
+            <Link href={`/films/${slugify(f.title)}`}>
+              <li key={`film-${f.episode_id}`}>{f.title}</li>
+            </Link>
           ))}
           {characters.map((c: Character) => (
-            <li key={`char-${c.url}`}>{c.name}</li>
+            <Link href={`/characters/${slugify(c.name)}`}>
+              <li key={`char-${c.name}`}>{c.name}</li>
+            </Link>
           ))}
         </ul>
       )}
