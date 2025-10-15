@@ -27,7 +27,7 @@ utils/
 
 ## 🛠️ Tech Stack
 
-- **Next.js 14+**
+- **Next.js 15+**
 - **TypeScript**
 - **Redux Toolkit**
 - **Axios**
@@ -76,11 +76,6 @@ If I continue working on this project, I would focus on:
 ### 💅 Improved global styling
 
 Global styling using styled components rather than the global css file
-
-### 🔄 Loading states
-
-Add **spinners** or **placeholder animations** while data is loading (right now it just says `Loading…`).  
-Maybe build a small component like `<Spinner />` or use skeleton loading.
 
 ### 🌍 More content
 
