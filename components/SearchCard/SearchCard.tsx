@@ -22,9 +22,9 @@ import { slugify } from '@/utils/slugify';
 import SearchResultCard from '../SearchResultCard/SearchResultCard';
 import SearchResultsWrapper from '../_atoms/SearchResultsWrapper/SearchResultsWrapper';
 import PaginationButtons from '../_molecules/PaginationButtons/PaginationButtons';
+import Spinner from '../_atoms/Spinner/Spinner';
 
 interface SearchCardProps {
-  loadingMsg: string;
   inputPlaceholder: string;
   buttonLabel: string;
   noResultsMsg: string;
@@ -47,7 +47,6 @@ const Wrapper = styled.section`
 `;
 
 export default function SearchCard({
-  loadingMsg,
   inputPlaceholder,
   buttonLabel,
   noResultsMsg,
@@ -138,7 +137,11 @@ export default function SearchCard({
       />
       <Button label={buttonLabel} onClick={handleSearch} />
 
-      {(loadingFilms || loadingCharacters) && <p>{loadingMsg}</p>}
+      {(loadingFilms || loadingCharacters) && (
+        <p>
+          <Spinner />
+        </p>
+      )}
       {errorMsg && <p role='alert'>{errorMsg}</p>}
       {hasSearched &&
         !loadingFilms &&
@@ -158,7 +161,6 @@ export default function SearchCard({
               releaseDate={f.release_date}
             />
           ))}
-
           {characters.map((c: Character) => (
             <SearchResultCard
               label={c.name}
@@ -168,29 +170,18 @@ export default function SearchCard({
               imgAlt={c.name}
             />
           ))}
-          {hasSearched && characters.length > 0 && (
-            <li style={{ listStyle: 'none', width: '100%' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '1rem',
-                  justifyContent: 'center',
-                  marginTop: '1rem',
-                }}
-              >
-                <PaginationButtons
-                  page={page}
-                  totalPages={totalPages}
-                  hasPrev={hasPrev}
-                  hasNext={hasNext}
-                  goPrev={goPrev}
-                  goNext={goNext}
-                  loading={isLoading}
-                />
-              </div>
-            </li>
-          )}
         </SearchResultsWrapper>
+      )}
+      {hasSearched && characters.length > 0 && (
+        <PaginationButtons
+          page={page}
+          totalPages={totalPages}
+          hasPrev={hasPrev}
+          hasNext={hasNext}
+          goPrev={goPrev}
+          goNext={goNext}
+          loading={isLoading}
+        />
       )}
     </Wrapper>
   );

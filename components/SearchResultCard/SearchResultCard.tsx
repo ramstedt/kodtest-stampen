@@ -57,9 +57,7 @@ export default function SearchResultCard({
           {label}
         </Link>
       </div>
-      <div>
-        <small>({releaseDate})</small>
-      </div>
+      <div>{releaseDate && <small>({releaseDate})</small>}</div>
     </Wrapper>
   );
 }
