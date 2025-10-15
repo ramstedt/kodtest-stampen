@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Poppins, Orbitron } from 'next/font/google';
 import './globals.css';
 import StoreProvider from './StoreProvider';
+import Navbar from '@/components/Navbar/Navbar';
+import Logo from '@/public/logo.png';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -26,6 +28,15 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={`${poppins.variable} ${orbitron.variable}`}>
+        <Navbar
+          logoSrc='/logo.png'
+          logoAlt='Site Logo'
+          logoHref='/'
+          links={[
+            { href: '/characters', text: 'Characters' },
+            { href: '/films', text: 'Films' },
+          ]}
+        />
         <StoreProvider>{children}</StoreProvider>
       </body>
     </html>
