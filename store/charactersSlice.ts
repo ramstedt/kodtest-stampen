@@ -40,6 +40,7 @@ interface CharactersState {
   next?: string | null;
   previous?: string | null;
   count?: number;
+  byUrl?: Record<string, Character>;
 }
 
 export const fetchCharacters = createAsyncThunk<
@@ -67,6 +68,24 @@ export const fetchCharactersPage = createAsyncThunk<
   return { results, next, previous, count, page };
 });
 
+export const fetchCharactersByUrls = createAsyncThunk<Character[], string[]>(
+  'characters/fetchCharactersByUrls',
+  async (urls, thunkAPI) => {
+    const unique = Array.from(new Set(urls.filter(Boolean)));
+    const results: Character[] = [];
+    for (const url of unique) {
+      try {
+        // Absolute URL will bypass baseURL when passed to axios
+        const res = await api.get(url, { signal: thunkAPI.signal });
+        results.push(res.data as Character);
+      } catch (e) {
+        // ignore individual failures; proceed with others
+      }
+    }
+    return results;
+  }
+);
+
 const charactersSlice = createSlice({
   name: 'characters',
   initialState: {
@@ -79,6 +98,7 @@ const charactersSlice = createSlice({
     next: null,
     previous: null,
     count: 0,
+    byUrl: {},
   } as CharactersState,
   reducers: {},
   extraReducers: (builder) => {
@@ -93,10 +113,6 @@ const charactersSlice = createSlice({
         (state, action: PayloadAction<Character[]>) => {
           state.listLoading = false;
           state.list = action.payload;
-          console.log(
-            '✅ fetchCharacters.fulfilled count =',
-            action.payload.length
-          );
         }
       )
       .addCase(fetchCharacters.rejected, (state, action) => {
@@ -124,6 +140,12 @@ const charactersSlice = createSlice({
         state.listError =
           (action.error && action.error.message) ||
           'Failed to load characters (paged)';
+      })
+      .addCase(fetchCharactersByUrls.fulfilled, (state, action) => {
+        if (!state.byUrl) state.byUrl = {};
+        for (const c of action.payload) {
+          if (c?.url) state.byUrl[c.url] = c;
+        }
       });
   },
 });
@@ -150,7 +172,7 @@ export const selectCharacterWithFilmTitles =
 export const selectCharactersPaging = (s: RootState) => {
   const count = s.characters.count ?? 0;
   const page = s.characters.page ?? 1;
-  const pageSize = 10; // SWAPI page size
+  const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(count / pageSize));
   return {
     page,
@@ -159,5 +181,8 @@ export const selectCharactersPaging = (s: RootState) => {
     hasNext: Boolean(s.characters.next),
   };
 };
+
+export const selectVisitedCharacters = (s: RootState) =>
+  Object.values(s.characters.byUrl || {});
 
 export default charactersSlice.reducer;
