@@ -23,13 +23,30 @@ export default function FilmsPage() {
     }
   }, [dispatch, films.length]);
 
-  if (isLoading) return <p>Loading…</p>;
-  if (error) return <p role='alert'>{error}</p>;
-
-  return (
-    <>
+  if (isLoading) {
+    return (
       <section>
         <h1>Star Wars Films</h1>
+        <p>Loading films…</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section>
+        <h1>Star Wars Films</h1>
+        <p role='alert'>{error}</p>
+      </section>
+    );
+  }
+
+  return (
+    <section>
+      <h1>Star Wars Films</h1>
+      {!films.length ? (
+        <p>Loading films…</p>
+      ) : (
         <SearchResultList>
           <ul>
             {films.map((film: Film) => (
@@ -41,7 +58,7 @@ export default function FilmsPage() {
             ))}
           </ul>
         </SearchResultList>
-      </section>
-    </>
+      )}
+    </section>
   );
 }
