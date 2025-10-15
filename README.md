@@ -33,7 +33,6 @@ utils/
 - **Axios**
 - **Styled Components**
 - **SWAPI (Star Wars API)**
-- **starwars-databank-server (For fetching character images)**
 
 ## 🚀 Getting Started
 
