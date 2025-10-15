@@ -6,10 +6,28 @@ import {
 } from '@reduxjs/toolkit';
 import { api } from '@/utils/api';
 import type { RootState } from '@/store';
+import { selectFilmTitlesByUrls } from './filmsSlice';
 
 export interface Character {
   name: string;
+  height?: string;
+  mass?: string;
+  hair_color?: string;
+  skin_color?: string;
+  eye_color?: string;
+  birth_year?: string;
+  gender?: string;
+  homeworld?: string;
+  films?: string[];
   url: string;
+}
+
+interface CharactersPagePayload {
+  results: Character[];
+  next: string | null;
+  previous: string | null;
+  count: number;
+  page: number;
 }
 
 interface CharactersState {
@@ -18,6 +36,10 @@ interface CharactersState {
   itemLoading: boolean;
   listError: string | null;
   itemError: string | null;
+  page?: number;
+  next?: string | null;
+  previous?: string | null;
+  count?: number;
 }
 
 export const fetchCharacters = createAsyncThunk<
@@ -31,6 +53,20 @@ export const fetchCharacters = createAsyncThunk<
   return response.data.results as Character[];
 });
 
+export const fetchCharactersPage = createAsyncThunk<
+  CharactersPagePayload,
+  { page?: number; query?: string } | undefined
+>('characters/fetchCharactersPage', async (args, thunkAPI) => {
+  const page = args?.page ?? 1;
+  const query = args?.query;
+  const response = await api.get('people/', {
+    params: { page, ...(query ? { search: query } : {}) },
+    signal: thunkAPI.signal,
+  });
+  const { results, next, previous, count } = response.data;
+  return { results, next, previous, count, page };
+});
+
 const charactersSlice = createSlice({
   name: 'characters',
   initialState: {
@@ -39,10 +75,15 @@ const charactersSlice = createSlice({
     itemLoading: false,
     listError: null,
     itemError: null,
+    page: 1,
+    next: null,
+    previous: null,
+    count: 0,
   } as CharactersState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+
       .addCase(fetchCharacters.pending, (state) => {
         state.listLoading = true;
         state.listError = null;
@@ -52,12 +93,37 @@ const charactersSlice = createSlice({
         (state, action: PayloadAction<Character[]>) => {
           state.listLoading = false;
           state.list = action.payload;
+          console.log(
+            '✅ fetchCharacters.fulfilled count =',
+            action.payload.length
+          );
         }
       )
       .addCase(fetchCharacters.rejected, (state, action) => {
         state.listLoading = false;
         state.listError =
           (action.error && action.error.message) || 'Failed to load characters';
+      })
+      .addCase(fetchCharactersPage.pending, (state) => {
+        state.listLoading = true;
+        state.listError = null;
+      })
+      .addCase(
+        fetchCharactersPage.fulfilled,
+        (state, action: PayloadAction<CharactersPagePayload>) => {
+          state.listLoading = false;
+          state.list = action.payload.results;
+          state.page = action.payload.page;
+          state.next = action.payload.next;
+          state.previous = action.payload.previous;
+          state.count = action.payload.count;
+        }
+      )
+      .addCase(fetchCharactersPage.rejected, (state, action) => {
+        state.listLoading = false;
+        state.listError =
+          (action.error && action.error.message) ||
+          'Failed to load characters (paged)';
       });
   },
 });
@@ -69,5 +135,29 @@ export const selectCharactersListStatus = createSelector(
   (s: RootState) => s.characters.listError,
   (isLoading, error) => ({ isLoading, error })
 );
+
+export const selectCharacterWithFilmTitles =
+  (name: string) => (state: RootState) => {
+    const character = state.characters.list.find((c) => c.name === name);
+    if (!character) return null;
+
+    const filmTitles = character.films
+      ? selectFilmTitlesByUrls(character.films)(state)
+      : [];
+    return { ...character, filmTitles };
+  };
+
+export const selectCharactersPaging = (s: RootState) => {
+  const count = s.characters.count ?? 0;
+  const page = s.characters.page ?? 1;
+  const pageSize = 10; // SWAPI page size
+  const totalPages = Math.max(1, Math.ceil(count / pageSize));
+  return {
+    page,
+    totalPages,
+    hasPrev: Boolean(s.characters.previous),
+    hasNext: Boolean(s.characters.next),
+  };
+};
 
 export default charactersSlice.reducer;
