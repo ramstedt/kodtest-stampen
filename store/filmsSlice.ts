@@ -1,4 +1,9 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  createSelector,
+} from '@reduxjs/toolkit';
 import { api } from '@/utils/api';
 import type { RootState } from '@/store';
 
@@ -11,6 +16,7 @@ export interface Film {
   characters: string[];
   created: string;
   edited: string;
+  url: string;
 }
 
 interface FilmsState {
@@ -62,9 +68,9 @@ const filmsSlice = createSlice({
 
 export const filmsReducer = filmsSlice.reducer;
 export const selectFilms = (s: RootState) => s.films.list;
-export const selectFilmsListStatus = (s: RootState) => ({
-  isLoading: s.films.listLoading,
-  error: s.films.listError,
-});
-
+export const selectFilmsListStatus = createSelector(
+  (s: RootState) => s.films.listLoading,
+  (s: RootState) => s.films.listError,
+  (isLoading, error) => ({ isLoading, error })
+);
 export default filmsSlice.reducer;
