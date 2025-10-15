@@ -21,14 +21,14 @@ const Btn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--black);
-  background-color: var(--grey);
+  color: var(--white);
+  background-color: var(--black);
   border: 2px solid var(--black);
 
   &:hover {
-    color: var(--white);
-    background-color: var(--black);
-    border-color: var(--white);
+    color: var(--black);
+    background-color: var(--grey);
+    border-color: var(--black);
   }
 `;
 
