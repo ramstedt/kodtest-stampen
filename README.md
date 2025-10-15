@@ -1,8 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Star Wars Wiki
 
-## Getting Started
+This is a small coding test project built with [Next.js](https://nextjs.org) and [Redux Toolkit](https://redux-toolkit.js.org).  
+It uses the [Star Wars API (SWAPI)](https://swapi.dev/api/) to show films and characters.
 
-First, run the development server:
+I chose to use Redux for this code test because I know it is part of your own tech stack and I wanted to show that I can work with it effectively.
+
+The app uses reusable Redux slices and thunks to get data from the API.
+
+## 🧱 Project Structure
+
+```
+app/
+ ├─ page.tsx                 → Main search view
+ ├─ films/                   → Film list and film detail pages
+ ├─ characters/              → Character list and character detail pages
+ └─ not-found.tsx (TODO)     → Custom 404 page
+
+store/
+ ├─ filmsSlice.ts
+ ├─ charactersSlice.ts
+ └─ index.ts (Redux store setup)
+
+utils/
+ └─ slugify.ts (shared helper for slugs)
+```
+
+## 🛠️ Tech Stack
+
+- **Next.js 14+**
+- **TypeScript**
+- **Redux Toolkit**
+- **Axios**
+- **Styled Components**
+- **SWAPI (Star Wars API)**
+- **starwars-databank-server (For fetching character images)**
+
+## 🚀 Getting Started
+
+Run the development server:
 
 ```bash
 npm run dev
@@ -14,23 +49,54 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Remember to create the `.env.local` file.  
+This app uses the API: `https://swapi.dev/api/`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the project.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🧩 Features
 
-## Learn More
+- Next.js App Router structure (`app/`)
+- Redux Toolkit slices for films and characters
+- Async data fetching with `createAsyncThunk`
+- Shared helper to make slugs for names and titles
+- Dynamic pages for film and character details
+- Centralized loading and error handling
+- Combined search for both films and characters
+- Styling with Styled Components 💅
 
-To learn more about Next.js, take a look at the following resources:
+## ⁉️ Problems I ran in to
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+I really wanted to use a secodn API to fetch images and merge with SWAPI. It got a bit too timeconsuming however, so I abandoned it.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧠 Next Steps
 
-## Deploy on Vercel
+If I continue working on this project, I would focus on:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 💅 Improved global styling
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Global styling using styled components rather than the global css file
+
+### 🔄 Loading states
+
+Add **spinners** or **placeholder animations** while data is loading (right now it just says `Loading…`).  
+Maybe build a small component like `<Spinner />` or use skeleton loading.
+
+### 🌍 More content
+
+Add more types of Star Wars data, for example:
+
+- Planets (`/planets`)
+- Vehicles (`/vehicles`)
+- Species and starships
+- And more...
+  Each type can have its own Redux slice and its own pages, just like films and characters.
+
+### 🚫 Custom 404 page
+
+Create a custom `app/not-found.tsx` page with a themed 404 message.  
+Possibly with the use of Next.js’s `notFound()` helper and design it with a Star Wars style.
+
+## 🌟 Thank You!
+
+Thank you for taking the time to look at my code test 💛
