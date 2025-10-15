@@ -73,4 +73,14 @@ export const selectFilmsListStatus = createSelector(
   (s: RootState) => s.films.listError,
   (isLoading, error) => ({ isLoading, error })
 );
+
+export const selectFilmTitleByUrl = (url: string) => (state: RootState) => {
+  const film = state.films.list.find((f) => f.url === url);
+  return film ? film.title : null;
+};
+
+export const selectFilmTitlesByUrls = (urls: string[]) => (state: RootState) =>
+  urls
+    .map((url) => state.films.list.find((f) => f.url === url)?.title)
+    .filter((title): title is string => Boolean(title));
 export default filmsSlice.reducer;
