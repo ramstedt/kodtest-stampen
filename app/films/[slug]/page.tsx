@@ -2,13 +2,72 @@
 import { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'next/navigation';
-import type { AppDispatch } from '@/store';
+import type { AppDispatch, RootState } from '@/store';
 import {
   fetchFilms,
   selectFilms,
   selectFilmsListStatus,
 } from '@/store/filmsSlice';
 import { slugify, deslugify } from '@/utils/slugify';
+import Image from 'next/image';
+import styled from 'styled-components';
+
+const Container = styled.article`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+`;
+
+const ImageWrapper = styled.div`
+  position: relative;
+  flex-shrink: 0;
+  width: 300px;
+  height: 420px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media (min-width: 768px) {
+    margin-right: 2rem;
+  }
+`;
+
+const PosterFallback = styled.div`
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--black);
+`;
+
+const ContentWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const FilmDetails = styled.div`
+  border: 2px solid var(--black);
+  padding: 1.5rem;
+  line-height: 1.6;
+`;
+
+const DetailRow = styled.p`
+  margin: 0.4rem 0;
+  font-size: 1rem;
+  span {
+    font-weight: bold;
+    margin-right: 0.25rem;
+  }
+`;
 
 export default function FilmPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -31,12 +90,49 @@ export default function FilmPage() {
 
   if (isLoading && !film) return <p>Loading…</p>;
   if (error && !film) return <p role='alert'>{error}</p>;
-  //TODO: 404 page
   if (!film) return <p>Not found.</p>;
 
   return (
-    <article>
-      <h1>{film.title}</h1>
-    </article>
+    <Container>
+      <ImageWrapper>
+        <Image
+          src={`/posters/${slug}.jpg`}
+          alt={film.title}
+          width={300}
+          height={420}
+          style={{ objectFit: 'cover', borderRadius: 8 }}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+          }}
+        />
+        <PosterFallback aria-hidden />
+      </ImageWrapper>
+
+      <ContentWrapper>
+        <h1>{film.title}</h1>
+        <FilmDetails>
+          <DetailRow>
+            <span>Episode:</span> {film.episode_id}
+          </DetailRow>
+          <DetailRow>
+            <span>Release date:</span> {film.release_date}
+          </DetailRow>
+          <DetailRow>
+            <span>Director:</span> {film.director}
+          </DetailRow>
+          <DetailRow>
+            <span>Producer:</span> {film.producer}
+          </DetailRow>
+
+          {film.characters && film.characters.length > 0 && (
+            <DetailRow>
+              <span>Characters:</span> {/* TODO: links to names */}
+              {film.characters.join(', ')}
+            </DetailRow>
+          )}
+        </FilmDetails>
+      </ContentWrapper>
+    </Container>
   );
 }

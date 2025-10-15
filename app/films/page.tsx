@@ -10,6 +10,7 @@ import {
 } from '@/store/filmsSlice';
 import { slugify } from '@/utils/slugify';
 import Link from 'next/link';
+import SearchResultList from '@/components/SearchResultList/SearchResultList';
 
 export default function FilmsPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,17 +27,21 @@ export default function FilmsPage() {
   if (error) return <p role='alert'>{error}</p>;
 
   return (
-    <section>
-      <h1>Star Wars Films</h1>
-      <ul>
-        {films.map((film: Film) => (
-          <li key={film.episode_id}>
-            <Link href={`/films/${slugify(film.title)}`}>
-              {film.title} ({film.release_date})
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <>
+      <section>
+        <h1>Star Wars Films</h1>
+        <SearchResultList>
+          <ul>
+            {films.map((film: Film) => (
+              <li key={film.episode_id}>
+                <Link href={`/films/${slugify(film.title)}`}>
+                  {film.title} ({film.release_date})
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </SearchResultList>
+      </section>
+    </>
   );
 }
