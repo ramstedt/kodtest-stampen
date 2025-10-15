@@ -6,7 +6,7 @@ export default function Home() {
       <SearchCard
         loadingMsg='loading'
         inputPlaceholder='Search'
-        noResultsMsg='No films found'
+        noResultsMsg='Nothing was found'
       />
     </main>
   );
